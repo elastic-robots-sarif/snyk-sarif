@@ -1,0 +1,33 @@
+---
+name: snyk
+
+on:
+  workflow_dispatch: ~
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  # Needed to upload the results to code-scanning dashboard.
+  security-events: write
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build an image
+        run: docker build . -t some-image       
+      - name: Run Snyk to check image for vulnerabilities
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: some-image
+          args: --file=Dockerfile
+
+      - uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
