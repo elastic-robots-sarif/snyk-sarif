@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build an image
         run: docker build . -t some-image       
       - name: Run Snyk to check image for vulnerabilities
